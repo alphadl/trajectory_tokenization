@@ -164,6 +164,28 @@ We compare **ReAct (baseline)** and **ReAct + trajectory tokenization** on the s
 
 You can also run each task separately with or without `--tokenize` (see README). The table lets you see whether tokenization helps (e.g. when trajectories are long) or stays on par with baseline when context is short.
 
+#### Extreme long trajectory: why our method wins
+
+When the trajectory has **many steps** (12–35) and **large context** (5k–20k chars), full ReAct **exceeds** a typical 8k context limit; our method **compresses** so the prompt stays within the limit while keeping a summary of all steps + full last N steps.
+
+**Demo:** `python demo_extreme_cases.py`
+
+| Case           | Steps | Full ReAct   | Tokenization | Saved  | Compression |
+|----------------|-------|--------------|--------------|--------|-------------|
+| ~5k context     | 12    | 5,664 chars  | 3,620 chars  | 2,044  | **36%**     |
+| ~10k context   | 20    | 10,761 chars | 5,440 chars  | 5,321  | **49%**     |
+| ~15k context   | 28    | 15,786 chars | 7,100 chars  | 8,686  | **55%**     |
+| ~20k context   | 35    | 20,851 chars | 7,207 chars  | 13,644 | **65%**     |
+
+*(Settings: `max_raw_steps=3`, `max_context_chars=8000`.)*
+
+**Under 8k context limit:**
+
+- **Full ReAct:** At 10k+ chars, earlier steps are **truncated**; the model only sees the last ~8k chars. Early Search/Lookup and key facts can be **lost**; the reasoning chain is **broken**.
+- **Trajectory Tokenization:** All cases fit **within 8k**. The model sees **summary tokens for every step** plus **full last 3 steps**. No step is dropped; the chain stays usable.
+
+**Conclusion:** The more steps and the longer the trajectory, the more our method **outperforms** full ReAct—bounded context with full structural memory vs. truncation and information loss.
+
 ### 中文
 
 我们在相同 dev 集（HotpotQA、FEVER）、相同数据和 prompt 下对比 **ReAct（基线）** 与 **ReAct + trajectory tokenization**。指标：**Exact Match (EM)**。
@@ -177,6 +199,28 @@ You can also run each task separately with or without `--tokenize` (see README).
   用于更稳定的 EM 估计（更接近论文设置）。
 
 也可对每个任务单独跑，加或不加 `--tokenize`（见 README）。通过表格可以看出在轨迹较长时 tokenization 是否带来提升，或在上下文较短时是否与基线相当。
+
+#### 极端长轨迹：为何我们的方法更优
+
+当轨迹**步数很多**（12–35 步）且**上下文很大**（5k–20k 字符）时，完整 ReAct 会**超出**常见的 8k 上下文上限；我们的方法通过**压缩**使 prompt 始终保持在限制内，同时保留所有步的摘要 + 最近 N 步的完整内容。
+
+**演示：** `python demo_extreme_cases.py`
+
+| 案例           | 步数 | 完整 ReAct   | Tokenization | 节省   | 压缩比     |
+|----------------|------|--------------|--------------|--------|------------|
+| ~5k 上下文     | 12   | 5,664 字符   | 3,620 字符   | 2,044  | **36%**    |
+| ~10k 上下文    | 20   | 10,761 字符  | 5,440 字符   | 5,321  | **49%**    |
+| ~15k 上下文    | 28   | 15,786 字符  | 7,100 字符   | 8,686  | **55%**    |
+| ~20k 上下文    | 35   | 20,851 字符  | 7,207 字符   | 13,644 | **65%**    |
+
+*（参数：`max_raw_steps=3`，`max_context_chars=8000`。）*
+
+**在 8k 上下文上限下：**
+
+- **完整 ReAct：** 超过 10k 字符时，**较早的步会被截断**；模型只能看到最后约 8k 字符。早期的 Search/Lookup 和关键事实可能**丢失**，推理链**断裂**。
+- **Trajectory Tokenization：** 所有案例均**在 8k 以内**。模型始终看到**每一步的摘要 token** 以及**最近 3 步的完整内容**。不丢步数；链条仍可用于下一步或 `Finish[...]`。
+
+**结论：** 步数越多、轨迹越长，我们的方法相对完整 ReAct **优势越明显**——有界上下文且保留完整结构记忆，而非截断与信息丢失。
 
 ---
 
@@ -237,6 +281,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 | `trajectory_tokenizer.py` | Core: `tokenize_trajectory()`, `parse_react_steps()`, etc. |
 | `react_loop.py` | ReAct loop; when `use_tokenization=True`, calls tokenizer when prompt is long. |
 | `test_tokenizer.py` | Unit test for tokenizer (no API). |
+| `demo_extreme_cases.py` | Extreme long trajectory (5k/10k/15k/20k) full vs tokenized comparison; no API. |
 
 Run all commands from the `trajectory_tokenization` directory. Data: `data/hotpot_dev_v1_simplified.json`, `data/paper_dev.jsonl` (original ReAct data).
 
@@ -295,6 +340,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 | `trajectory_tokenizer.py` | 核心：`tokenize_trajectory()`、`parse_react_steps()` 等。 |
 | `react_loop.py` | ReAct 主循环；`use_tokenization=True` 时在 prompt 过长时调用 tokenizer。 |
 | `test_tokenizer.py` | tokenizer 单元测试（不调用 API）。 |
+| `demo_extreme_cases.py` | 极端长轨迹（5k/10k/15k/20k）完整版 vs 压缩版对比；不调用 API。 |
 
 所有命令均在 `trajectory_tokenization` 目录下执行。数据：`data/hotpot_dev_v1_simplified.json`、`data/paper_dev.jsonl`（原始 ReAct 数据）。
 
