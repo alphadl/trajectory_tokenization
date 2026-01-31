@@ -46,7 +46,7 @@ We want **bounded context** without discarding the *structure* of the trajectory
 
 ### English
 
-- **When** the current prompt length exceeds a threshold (e.g. 8000 characters), we **compress** the trajectory:
+- **When** the current prompt length exceeds a threshold (default 32000 characters; tune for your model’s context), we **compress** the trajectory:
   1. **Parse** the trajectory part of the prompt into steps: each step = (Thought, Action, Observation).
   2. **Summarize** all but the last N steps into **one-line tokens**:  
      `[Step i] [truncated_thought | action | truncated_obs]`  
@@ -58,7 +58,7 @@ So: **ReAct** = full history every step → unbounded growth. **Trajectory Token
 
 ### 中文
 
-- **当**当前 prompt 长度超过阈值（如 8000 字符）时，我们对轨迹做**压缩**：
+- **当**当前 prompt 长度超过阈值（默认 32000 字符；可按模型上下文调整）时，我们对轨迹做**压缩**：
   1. **解析** prompt 中的轨迹部分为若干步，每步 = (Thought, Action, Observation)。
   2. **摘要**除最后 N 步外的所有步为**单行 token**：  
      `[Step i] [截断的 thought | action | 截断的 obs]`  
@@ -97,10 +97,10 @@ So: **ReAct** = full history every step → unbounded growth. **Trajectory Token
 ### English
 
 - **Deterministic, no LLM for summarization:** Each step is turned into a token by truncating thought/obs to a max length and concatenating with the action. No extra API call.
-- **Trigger:** Compression runs only when `len(full_prompt) > max_context_chars` (default 8000). Until then, behavior is identical to ReAct.
+- **Trigger:** Compression runs only when `len(full_prompt) > max_context_chars` (default 32000). Until then, behavior is identical to ReAct.
 - **Parameters:**
   - `max_raw_steps`: number of most recent steps to keep in full (default 3).
-  - `max_context_chars`: trigger threshold (default 8000).
+  - `max_context_chars`: trigger threshold (default 32000; tune for your model’s context).
   - `max_thought` / `max_obs`: max characters kept in each token for thought and observation (default 60, 100). If the rebuilt prompt is still too long, the code can recursively reduce these and/or `max_raw_steps`.
 
 See `trajectory_tokenizer.py`: `parse_react_steps`, `summarize_step`, `tokenize_trajectory`.
@@ -108,10 +108,10 @@ See `trajectory_tokenizer.py`: `parse_react_steps`, `summarize_step`, `tokenize_
 ### 中文
 
 - **确定性、无需 LLM 做摘要：** 每一步通过截断 thought/obs 到最大长度并与 action 拼接成 token，不增加额外 API 调用。
-- **触发条件：** 仅当 `len(full_prompt) > max_context_chars`（默认 8000）时才做压缩，此前与 ReAct 完全一致。
+- **触发条件：** 仅当 `len(full_prompt) > max_context_chars`（默认 32000）时才做压缩，此前与 ReAct 完全一致。
 - **参数：**
   - `max_raw_steps`：保留完整内容的最近步数（默认 3）。
-  - `max_context_chars`：触发压缩的字符阈值（默认 8000）。
+  - `max_context_chars`：触发压缩的字符阈值（默认 32000；可按模型上下文调整）。
   - `max_thought` / `max_obs`：每个 token 中 thought 和 observation 的最大字符数（默认 60、100）。若压缩后仍超长，代码会递归减小这些值或 `max_raw_steps`。
 
 见 `trajectory_tokenizer.py`：`parse_react_steps`、`summarize_step`、`tokenize_trajectory`。
@@ -177,7 +177,7 @@ When the trajectory has **many steps** (12–35) and **large context** (5k–20k
 | ~15k context   | 28    | 15,786 chars | 7,100 chars  | 8,686  | **55%**     |
 | ~20k context   | 35    | 20,851 chars | 7,207 chars  | 13,644 | **65%**     |
 
-*(Settings: `max_raw_steps=3`, `max_context_chars=8000`.)*
+*(Settings: `max_raw_steps=3`, `max_context_chars=32000`.)*
 
 **Under 8k context limit:**
 
@@ -213,7 +213,7 @@ When the trajectory has **many steps** (12–35) and **large context** (5k–20k
 | ~15k 上下文    | 28   | 15,786 字符  | 7,100 字符   | 8,686  | **55%**    |
 | ~20k 上下文    | 35   | 20,851 字符  | 7,207 字符   | 13,644 | **65%**    |
 
-*（参数：`max_raw_steps=3`，`max_context_chars=8000`。）*
+*（参数：`max_raw_steps=3`，`max_context_chars=32000`。）*
 
 **在 8k 上下文上限下：**
 
@@ -267,7 +267,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 |--------|--------|
 | `--tokenize` | Use trajectory tokenization (ReAct+Token). |
 | `--max_raw_steps N` | Keep last N steps in full (default 3). |
-| `--max_context_chars C` | Compress when prompt length > C (default 8000). |
+| `--max_context_chars C` | Compress when prompt length > C (default 32000). |
 | `--max_examples M` | Number of dev examples to run. |
 
 **Scripts**
@@ -326,7 +326,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 |------|------|
 | `--tokenize` | 使用轨迹 token 化（ReAct+Token）。 |
 | `--max_raw_steps N` | 保留最近 N 步完整（默认 3）。 |
-| `--max_context_chars C` | prompt 长度超过 C 时压缩（默认 8000）。 |
+| `--max_context_chars C` | prompt 长度超过 C 时压缩（默认 32000）。 |
 | `--max_examples M` | 运行的 dev 样本数。 |
 
 **脚本**

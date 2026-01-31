@@ -51,7 +51,7 @@ def build_long_trajectory(num_steps: int, thought_len: int = 120, obs_len: int =
     return "\n".join(parts)
 
 
-def run_extreme_case(name: str, num_steps: int, target_full_chars: int, max_raw_steps: int = 3, max_context_chars: int = 8000):
+def run_extreme_case(name: str, num_steps: int, target_full_chars: int, max_raw_steps: int = 3, max_context_chars: int = 32000):
     """生成接近 target_full_chars 字数的轨迹，然后做 full vs tokenized 对比。"""
     # 每步大约 40 + thought + obs，反推 thought_len 和 obs_len
     per_step = target_full_chars // num_steps
@@ -103,7 +103,7 @@ def main():
 
     print("=" * 72)
     print("极端长轨迹对比：完整 ReAct vs Trajectory Tokenization")
-    print("  max_raw_steps=3, max_context_chars=8000")
+    print("  max_raw_steps=3, max_context_chars=32000")
     print("=" * 72)
 
     results = []

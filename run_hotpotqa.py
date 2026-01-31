@@ -2,7 +2,7 @@
 """
 Run ReAct on HotpotQA dev set. Supports trajectory tokenization for long context.
 Usage:
-  python run_hotpotqa.py [--max_examples 500] [--tokenize] [--max_raw_steps 3] [--max_context_chars 8000]
+  python run_hotpotqa.py [--max_examples 500] [--tokenize] [--max_raw_steps 3] [--max_context_chars 32000]
 """
 import argparse
 import json
@@ -96,7 +96,7 @@ def main():
     parser.add_argument("--max_examples", type=int, default=500, help="Max dev examples to run")
     parser.add_argument("--tokenize", action="store_true", help="ReAct + trajectory tokenization")
     parser.add_argument("--max_raw_steps", type=int, default=3)
-    parser.add_argument("--max_context_chars", type=int, default=8000)
+    parser.add_argument("--max_context_chars", type=int, default=32000)
     parser.add_argument("--max_steps", type=int, default=8)
     parser.add_argument("--seed", type=int, default=233)
     parser.add_argument("--verbose", action="store_true")

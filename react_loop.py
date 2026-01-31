@@ -69,7 +69,7 @@ def run_react(
     full_prompt = instruction_prefix
     n_calls, n_badcalls = 0, 0
     for i in range(1, max_steps + 1):
-        if use_tokenization and len(full_prompt) > (max_context_chars or 8000):
+        if use_tokenization and len(full_prompt) > (max_context_chars or 32000):
             full_prompt = tokenize_trajectory(
                 full_prompt,
                 instruction_prefix,

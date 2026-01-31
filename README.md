@@ -63,7 +63,7 @@ When the trajectory has **many steps** (e.g. 12–35 steps) and **large context*
 | ~15k context    | 28    | 15,786 chars| 7,100 chars  | 8,686  | **55%**     |
 | ~20k context    | 35    | 20,851 chars| 7,207 chars  | 13,644 | **65%**     |
 
-*(Settings: `max_raw_steps=3`, `max_context_chars=8000`.)*
+*(Settings: `max_raw_steps=3`, `max_context_chars=32000`.)*
 
 **Effect under 8k context limit:**
 
@@ -129,7 +129,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 
 - `--tokenize`: use trajectory tokenization.
 - `--max_raw_steps N`: keep last N steps in full (default 3).
-- `--max_context_chars C`: compress when prompt length > C (default 8000).
+- `--max_context_chars C`: compress when prompt length > C (default 32000; tune for your model’s context).
 - `--max_examples M`: number of dev examples.
 
 ---
