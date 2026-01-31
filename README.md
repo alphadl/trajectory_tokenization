@@ -117,6 +117,19 @@ Original ReAct data: `data/hotpot_dev_v1_simplified.json`, `data/paper_dev.jsonl
 
 ## Citation
 
+If you use this code, please cite this repository:
+
+```bibtex
+@software{trajectory_tokenization,
+  title = {Trajectory Tokenization},
+  author = {Ding, Liang},
+  year = {2025},
+  url = {https://github.com/alphadl/trajectory_tokenization},
+}
+```
+
+This work builds on ReAct:
+
 ```bibtex
 @inproceedings{yao2023react,
   title = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
