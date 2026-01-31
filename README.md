@@ -123,7 +123,7 @@ If you use this code, please cite this repository:
 @software{trajectory_tokenization,
   title = {Trajectory Tokenization},
   author = {Ding, Liang},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/alphadl/trajectory_tokenization},
 }
 ```

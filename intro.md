@@ -118,7 +118,37 @@ See `trajectory_tokenizer.py`: `parse_react_steps`, `summarize_step`, `tokenize_
 
 ---
 
-## 6. Effect / 效果
+## 6. Comparison with related work / 与相关方法对比
+
+### English
+
+Several recent works also compress or fold agent context (e.g. **ReSum**, **Context-Folding**, **FoldAct**). Main differences from **Trajectory Tokenization**:
+
+| Aspect | ReSum / Context-Folding / FoldAct (typical) | Trajectory Tokenization (this repo) |
+|--------|--------------------------------------------|-------------------------------------|
+| **Training** | Use **RL / GRPO** (ReSum-GRPO, FoldGRPO, FoldAct) so the agent learns to act under summarized or folded context. | **No training.** Inference-only; same ReAct loop, same model. |
+| **Summary production** | Often **LLM-generated** summaries or learned summarization; summary can condition future policy. | **Deterministic rule**: truncate thought/obs by character limit, keep action; **no extra LLM call** for summarization. |
+| **Structure** | **Context-Folding**: agent branches into sub-trajectories, then “folds” a subtask into a summary when done. **ReSum**: periodic summarization into “compact reasoning states.” | **Single linear trajectory**: older steps → one-line tokens; last N steps stay full. No branching/folding. |
+| **When it applies** | Usually requires **new training** or **new agent design** (summary-conditioned policy, process rewards, etc.). | **Drop-in** for existing ReAct: same prompt, same env; add `--tokenize` when context is long. |
+
+In short: **Trajectory Tokenization** is a **lightweight, training-free** way to bound context: deterministic step-wise tokens + full recent steps, no RL, no LLM summarizer. Methods like ReSum/FoldAct aim for stronger long-horizon performance via **training** and sometimes **procedural folding** (subtask → sub-trajectory → fold); they are complementary (you could add training on top of tokenization later).
+
+### 中文
+
+近年也有不少工作对 agent 的上下文做压缩或折叠（如 **ReSum**、**Context-Folding**、**FoldAct**）。与 **Trajectory Tokenization** 的主要区别如下：
+
+| 维度 | ReSum / Context-Folding / FoldAct（典型做法） | Trajectory Tokenization（本仓库） |
+|------|-----------------------------------------------|-----------------------------------|
+| **训练** | 使用 **RL / GRPO**（ReSum-GRPO、FoldGRPO、FoldAct）让 agent 在摘要或折叠后的上下文中行动。 | **不训练**。仅推理；同一 ReAct 循环、同一模型。 |
+| **摘要如何产生** | 多为 **LLM 生成**摘要或学习式摘要；摘要可条件化后续策略。 | **确定性规则**：按字符截断 thought/obs，保留 action；**不做额外 LLM 调用**做摘要。 |
+| **结构** | **Context-Folding**：agent 分支为子轨迹，子任务完成后“折叠”成摘要。**ReSum**：周期性将历史压成“紧凑推理状态”。 | **单条线性轨迹**：较早步 → 单行 token；最近 N 步保持完整。无分支/折叠。 |
+| **适用场景** | 通常需要**重新训练**或**新 agent 设计**（摘要条件策略、过程奖励等）。 | 对现有 ReAct **即插即用**：相同 prompt、相同环境；上下文长时加 `--tokenize` 即可。 |
+
+简言之：**Trajectory Tokenization** 是一种**轻量、免训练**的上下文有界方案——确定性的一步一 token + 近期完整步，无需 RL，无需 LLM 做摘要。ReSum/FoldAct 等则通过**训练**和（部分工作的）**过程式折叠**（子任务 → 子轨迹 → 折叠）追求更强的长程表现；二者可互补（后续也可在 tokenization 之上加训练）。
+
+---
+
+## 7. Effect / 效果
 
 ### English
 
@@ -150,7 +180,7 @@ You can also run each task separately with or without `--tokenize` (see README).
 
 ---
 
-## 7. How to Use / 如何使用
+## 8. How to Use / 如何使用
 
 ### English
 
@@ -270,7 +300,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 
 ---
 
-## 8. Citation / 引用
+## 9. Citation / 引用
 
 If you use this code, please cite this repository / 若使用本代码，请引用本仓库：
 
@@ -278,7 +308,7 @@ If you use this code, please cite this repository / 若使用本代码，请引�
 @software{trajectory_tokenization,
   title = {Trajectory Tokenization},
   author = {Ding, Liang},
-  year = {2025},
+  year = {2026},
   url = {https://github.com/alphadl/trajectory_tokenization},
 }
 ```
