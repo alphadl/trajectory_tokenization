@@ -52,23 +52,23 @@ In code / scripts: `trajectory_tokenizer`, `--tokenize`, etc. In prose: "traject
 
 ## Extreme long trajectory: why our method wins
 
-When the trajectory has **many steps** (e.g. 12–35 steps) and **large context** (5k–20k characters), full ReAct quickly **exceeds** a typical context limit (e.g. 8k chars). Trajectory Tokenization **compresses** the history so the prompt stays **within the limit** while preserving a summary of all steps + full detail for the last N steps.
+When the trajectory has **many steps** (e.g. 45–100 steps) and **large context** (35k–80k characters), full ReAct quickly **exceeds** a typical context limit (default 32k chars). Trajectory Tokenization **compresses** the history so the prompt stays **within the limit** while preserving a summary of all steps + full detail for the last N steps.
 
 **Run the demo:** `python demo_extreme_cases.py`
 
 | Case            | Steps | Full ReAct | Tokenization | Saved  | Compression |
 |-----------------|-------|------------|---------------|--------|-------------|
-| ~5k context      | 12    | 5,664 chars| 3,620 chars   | 2,044  | **36%**     |
-| ~10k context    | 20    | 10,761 chars| 5,440 chars  | 5,321  | **49%**     |
-| ~15k context    | 28    | 15,786 chars| 7,100 chars  | 8,686  | **55%**     |
-| ~20k context    | 35    | 20,851 chars| 7,207 chars  | 13,644 | **65%**     |
+| ~35k context    | 45    | ~35k chars | ~12k–18k chars| ~18k+  | **~50%+**   |
+| ~50k context    | 65    | ~50k chars | ~18k–24k chars| ~26k+  | **~52%+**   |
+| ~65k context    | 85    | ~65k chars | ~24k–30k chars| ~35k+  | **~54%+**   |
+| ~80k context    | 100   | ~80k chars | ~28k–32k chars| ~48k+  | **~60%+**   |
 
-*(Settings: `max_raw_steps=3`, `max_context_chars=32000`.)*
+*(Exact numbers: run `python demo_extreme_cases.py`. Settings: `max_raw_steps=3`, `max_context_chars=32000`.)*
 
-**Effect under 8k context limit:**
+**Effect under 32k context limit:**
 
-- **Full ReAct:** At 10k+ chars, the **earlier steps are truncated** (model only sees the last ~8k chars). Early Search/Lookup and key facts can be **lost**; the reasoning chain is **broken**.
-- **Trajectory Tokenization:** All cases fit **within 8k**. The model always sees **summary tokens for every step** plus **full last 3 steps**. No step is dropped; the chain stays usable for the next action or `Finish[...]`.
+- **Full ReAct:** At 35k+ chars, the **earlier steps are truncated** (model only sees the last ~32k chars). Early Search/Lookup and key facts can be **lost**; the reasoning chain is **broken**.
+- **Trajectory Tokenization:** All cases fit **within 32k**. The model always sees **summary tokens for every step** plus **full last 3 steps**. No step is dropped; the chain stays usable for the next action or `Finish[...]`.
 
 So: **the more steps and the longer the trajectory, the more our method outperforms full ReAct**—bounded context with full structural memory vs. truncation and information loss.
 
@@ -102,7 +102,7 @@ Runs HotpotQA and FEVER with **ReAct (baseline)** and **ReAct + tokenization**, 
 | **trajectory_tokenizer.py** | Parse/summarize trajectory; `tokenize_trajectory()`. |
 | **react_loop.py** | ReAct loop with optional tokenization. |
 | **test_tokenizer.py** | Unit test for tokenizer (no API). |
-| **demo_extreme_cases.py** | Extreme long trajectory (5k/10k/15k/20k) full vs tokenized comparison; no API. |
+| **demo_extreme_cases.py** | Extreme long trajectory (35k/50k/65k/80k) full vs tokenized comparison; no API. |
 
 Dependencies: `wikienv.py`, `wrappers.py`.
 

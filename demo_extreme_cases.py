@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-极端长轨迹对比：5k / 10k / 15k+ 上下文、多步数。
+极端长轨迹对比：35k / 50k / 65k / 80k+ 上下文、多步数（阈值 32k）。
 对比「完整 ReAct」与「Trajectory Tokenization」的字数、结构与可读性。
 """
 import os
@@ -88,22 +88,23 @@ def run_extreme_case(name: str, num_steps: int, target_full_chars: int, max_raw_
         "ratio": len_tok / len_full if len_full else 0,
         "full_prompt": full_prompt,
         "tokenized_prompt": tokenized,
-        "over_8k_full": len_full > max_context_chars,
-        "over_8k_tok": len_tok > max_context_chars,
+        "over_threshold_full": len_full > max_context_chars,
+        "over_threshold_tok": len_tok > max_context_chars,
     }
 
 
 def main():
+    threshold = 32_000
     cases = [
-        ("~5k 上下文, 12 步", 12, 5_000, 3, 8_000),
-        ("~10k 上下文, 20 步", 20, 10_000, 3, 8_000),
-        ("~15k 上下文, 28 步", 28, 15_000, 3, 8_000),
-        ("~20k 上下文, 35 步", 35, 20_000, 3, 8_000),
+        ("~35k 上下文, 45 步", 45, 35_000, 3, threshold),
+        ("~50k 上下文, 65 步", 65, 50_000, 3, threshold),
+        ("~65k 上下文, 85 步", 85, 65_000, 3, threshold),
+        ("~80k 上下文, 100 步", 100, 80_000, 3, threshold),
     ]
 
     print("=" * 72)
     print("极端长轨迹对比：完整 ReAct vs Trajectory Tokenization")
-    print("  max_raw_steps=3, max_context_chars=32000")
+    print("  max_raw_steps=3, max_context_chars=%d" % threshold)
     print("=" * 72)
 
     results = []
@@ -115,8 +116,8 @@ def main():
         print(c["name"])
         print("-" * 72)
         print("  步数:           %d" % c["num_steps"])
-        print("  完整 ReAct:     %d 字符  (超过 8k: %s)" % (c["len_full"], "是" if c["over_8k_full"] else "否"))
-        print("  Tokenization:   %d 字符  (超过 8k: %s)" % (c["len_tok"], "是" if c["over_8k_tok"] else "否"))
+        print("  完整 ReAct:     %d 字符  (超过 %dk: %s)" % (c["len_full"], threshold // 1000, "是" if c["over_threshold_full"] else "否"))
+        print("  Tokenization:   %d 字符  (超过 %dk: %s)" % (c["len_tok"], threshold // 1000, "是" if c["over_threshold_tok"] else "否"))
         print("  节省:           %d 字符  (压缩比: %.2f%%)" % (c["saved"], (1 - c["ratio"]) * 100))
         print()
 
@@ -131,53 +132,53 @@ def main():
             c["name"][:28], c["len_full"], c["len_tok"], c["saved"], (1 - c["ratio"]) * 100))
     print("=" * 72)
 
-    # 展示 10k case 的结构片段：完整版中间 vs 压缩版整体结构
-    c10 = results[1]
+    # 展示 50k case 的结构片段：完整版中间 vs 压缩版整体结构
+    c50 = results[1]
     print()
     print("=" * 72)
-    print("【10k 案例】结构对比（片段）")
+    print("【50k 案例】结构对比（片段）")
     print("=" * 72)
     print()
-    print("--- 完整 ReAct：中间一段（约第 8–10 步）---")
-    mid = len(c10["full_prompt"]) // 2
-    snippet = c10["full_prompt"][mid - 400 : mid + 400]
+    print("--- 完整 ReAct：中间一段（约第 30–35 步）---")
+    mid = len(c50["full_prompt"]) // 2
+    snippet = c50["full_prompt"][mid - 400 : mid + 400]
     print(snippet)
     print()
     print("--- Tokenization：压缩后的整体结构（前 1200 字 + 最后 800 字）---")
-    tok = c10["tokenized_prompt"]
+    tok = c50["tokenized_prompt"]
     print(tok[:1200])
     print("  ... [中间省略] ...")
     print(tok[-800:])
     print()
 
-    # 15k/20k 的“最后几步”对比：模型实际看到的结尾
+    # 80k 的“最后几步”对比：模型实际看到的结尾
     print("=" * 72)
-    print("【超长 20k 案例】模型看到的「当前上下文结尾」对比")
+    print("【超长 80k 案例】模型看到的「当前上下文结尾」对比")
     print("=" * 72)
-    c20 = results[3]
+    c80 = results[3]
     print()
-    print("--- 完整 ReAct 最后 1000 字（若上下文上限 8k，前面会被截断）---")
-    print(c20["full_prompt"][-1000:])
+    print("--- 完整 ReAct 最后 1000 字（若上下文上限 32k，前面会被截断）---")
+    print(c80["full_prompt"][-1000:])
     print()
-    print("--- Tokenization 最后 1000 字（整体在 8k 内，模型看到完整摘要+最近 3 步）---")
-    print(c20["tokenized_prompt"][-1000:])
+    print("--- Tokenization 最后 1000 字（压到 32k 内，模型看到完整摘要+最近 3 步）---")
+    print(c80["tokenized_prompt"][-1000:])
     print()
 
-    # 效果差异总结：假设模型上下文上限 8k
+    # 效果差异总结：假设模型上下文上限 32k
     print("=" * 72)
-    print("【效果差异总结】假设上下文上限 = 8k 字符")
+    print("【效果差异总结】假设上下文上限 = 32k 字符")
     print("=" * 72)
     print("""
   完整 ReAct:
-    - 5k 案例:  可全部放入，无截断。
-    - 10k 案例: 超出 8k → 只能保留「最后约 8k 字符」，前面约 2k 字（约 3–4 步）被截断，模型看不到早期 Search/Lookup。
-    - 15k 案例: 超出约 8k → 前约 8k 字（约 12 步）丢失，模型只看到后半段轨迹，容易漏掉早期关键证据。
-    - 20k 案例: 前约 13k 字（约 22 步）被截断，模型几乎只看到最后 10+ 步，推理链断裂。
+    - 35k 案例: 超出 32k → 前面约 3k 字被截断，模型看不到最早几步。
+    - 50k 案例: 超出 32k → 只能保留「最后约 32k 字符」，前约 18k 字（约 20+ 步）被截断。
+    - 65k 案例: 前约 33k 字（约 35+ 步）丢失，模型只看到后半段轨迹。
+    - 80k 案例: 前约 48k 字（约 50+ 步）被截断，模型几乎只看到最后 30+ 步，推理链易断裂。
 
   Trajectory Tokenization:
-    - 所有案例压缩后均在 8k 内（约 3.6k–7.2k）。
+    - 所有案例压缩后均在 32k 内（约 1.5万–2.5万字符）。
     - 模型始终看到：早期步骤的「摘要 token」+ 最近 3 步完整 (Thought/Action/Observation)。
-    - 不丢步数：32 个 [Step i] token 保留梗概，最后 3 步完整，适合续写下一步或 Finish。
+    - 不丢步数：[Step i] token 保留梗概，最后 3 步完整，适合续写下一步或 Finish。
 
   结论：步数越多、轨迹越长，完整 ReAct 在固定上下文下越容易截断、丢失早期信息；
        Tokenization 把长度压到上限以内，保留全局梗概 + 近期细节，两种方法在极端长轨迹下效果差异显著。
