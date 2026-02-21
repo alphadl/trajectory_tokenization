@@ -9,3 +9,4 @@ trajs/
 venv/
 *.egg-info/
 *.log
+push.sh
