@@ -91,7 +91,7 @@ class HotPotQAWrapper(gym.Wrapper):
     self.env.reset(seed=seed, return_info=return_info, options=options)
     try:
       self.env.step('')
-    except:
+    except Exception:
       pass
     self.env.reset(seed=seed, return_info=return_info, options=options)
     self.data_idx = int(np.random.randint(len(self.data))) if idx is None else idx
@@ -160,7 +160,7 @@ class FeverWrapper(gym.Wrapper):
     self.env.reset(seed=seed, return_info=return_info, options=options)
     try:
       self.env.step('')
-    except:
+    except Exception:
       pass
     self.env.reset(seed=seed, return_info=return_info, options=options)
     self.data_idx = int(np.random.randint(len(self.data))) if idx is None else idx
