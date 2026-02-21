@@ -1,5 +1,5 @@
 # Same as original ReAct + no extra deps for trajectory tokenization
-openai>=0.27.0
+openai>=1.0.0
 requests
 beautifulsoup4
-# For WikiEnv (original ReAct): gym>=0.21.0  (optional; newer gym may need gym.spaces fix)
+gym>=0.21.0
