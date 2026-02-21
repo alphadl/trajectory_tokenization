@@ -1,11 +1,8 @@
-import ast
 import json
 import time
 import gym
 import requests
 from bs4 import BeautifulSoup
-
-# import wikipedia
 
 def clean_str(p):
   return p.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
@@ -86,15 +83,6 @@ class WikiEnv(gym.Env):
     sentences = [s.strip() + '.' for s in sentences if s.strip()]
     return ' '.join(sentences[:5])
 
-    # ps = page.split("\n")
-    # ret = ps[0]
-    # for i in range(1, len(ps)):
-    #   if len((ret + ps[i]).split(" ")) <= 50:
-    #     ret += ps[i]
-    #   else:
-    #     break
-    # return ret
-
   def search_step(self, entity):
     entity_ = entity.replace(" ", "+")
     search_url = f"https://en.wikipedia.org/w/index.php?search={entity_}"
@@ -131,8 +119,6 @@ class WikiEnv(gym.Env):
     
     if action.startswith("search[") and action.endswith("]"):
       entity = action[len("search["):-1]
-      # entity_ = entity.replace(" ", "_")
-      # search_url = f"https://en.wikipedia.org/wiki/{entity_}"
       self.search_step(entity)
     elif action.startswith("lookup[") and action.endswith("]"):
       keyword = action[len("lookup["):-1]
