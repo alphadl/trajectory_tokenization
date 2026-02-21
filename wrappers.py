@@ -108,16 +108,16 @@ class HotPotQAWrapper(gym.Wrapper):
 
   def get_reward(self, info):
     if info['answer'] is not None:
-      pred = normalize_answer(self.data[self.data_idx][1])
-      gt = normalize_answer(info['answer'])
+      gt = normalize_answer(self.data[self.data_idx][1])
+      pred = normalize_answer(info['answer'])
       score = (pred == gt)
       return int(score)
     return 0
   
   def get_metrics(self, info):
     if info['answer'] is not None:
-      pred = normalize_answer(self.data[self.data_idx][1])
-      gt = normalize_answer(info['answer'])
+      gt = normalize_answer(self.data[self.data_idx][1])
+      pred = normalize_answer(info['answer'])
       em = (pred == gt)
       f1 = f1_score(pred, gt)[0]
       return {'reward': em, 'em': em, 'f1': f1}
