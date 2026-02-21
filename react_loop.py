@@ -15,16 +15,14 @@ except ImportError:
         return args[0] if args else ""
 
 
-def llm(prompt: str, stop: List[str], api_key: Optional[str] = None, model: str = "text-davinci-002") -> str:
+def llm(prompt: str, stop: List[str], api_key: Optional[str] = None, model: str = "gpt-4o-mini") -> str:
     try:
-        import openai
-        if api_key is not None:
-            openai.api_key = api_key
-        else:
-            openai.api_key = os.environ.get("OPENAI_API_KEY", "")
-        response = openai.Completion.create(
+        from openai import OpenAI
+        key = api_key or os.environ.get("OPENAI_API_KEY", "")
+        client = OpenAI(api_key=key)
+        response = client.chat.completions.create(
             model=model,
-            prompt=prompt,
+            messages=[{"role": "user", "content": prompt}],
             temperature=0,
             max_tokens=100,
             top_p=1,
@@ -32,7 +30,7 @@ def llm(prompt: str, stop: List[str], api_key: Optional[str] = None, model: str 
             presence_penalty=0.0,
             stop=stop,
         )
-        return response["choices"][0]["text"]
+        return response.choices[0].message.content or ""
     except Exception as e:
         raise RuntimeError(f"LLM call failed: {e}") from e
 
