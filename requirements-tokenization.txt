@@ -3,3 +3,4 @@ openai>=1.0.0
 requests
 beautifulsoup4
 gym>=0.21.0
+numpy
