@@ -11,9 +11,9 @@ import os
 import sys
 from types import SimpleNamespace
 
-_react_root = os.path.dirname(os.path.abspath(__file__))
-os.chdir(_react_root)
-sys.path.insert(0, _react_root)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _bootstrap
+_bootstrap.setup(__file__)
 
 import run_hotpotqa
 import run_fever
@@ -26,8 +26,8 @@ def main():
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("Set OPENAI_API_KEY to run comparison.")
+    if not (os.environ.get("OPENAI_API_KEY") or "").strip():
+        print("Error: OPENAI_API_KEY is not set or empty. Set it to run comparison.", file=sys.stderr)
         sys.exit(1)
 
     base = SimpleNamespace(

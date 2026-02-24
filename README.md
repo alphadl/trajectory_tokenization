@@ -77,7 +77,7 @@ So: **the more steps and the longer the trajectory, the more our method outperfo
 ## Setup
 
 - Set `OPENAI_API_KEY`.
-- Install: `pip install openai requests beautifulsoup4`
+- Install: `pip install -r requirements-tokenization.txt` (or `pip install openai requests beautifulsoup4 gym numpy`)
 
 ## Quick start (one-click comparison)
 
@@ -131,6 +131,7 @@ python run_fever.py --split dev --max_examples 500 --tokenize
 - `--max_raw_steps N`: keep last N steps in full (default 3).
 - `--max_context_chars C`: compress when prompt length > C (default 32000; tune for your model’s context).
 - `--max_examples M`: number of dev examples.
+- `--prompt_key K`: prompt key in JSON (e.g. `webthink_simple6` for HotpotQA, `webthink_simple3` for FEVER).
 
 ---
 

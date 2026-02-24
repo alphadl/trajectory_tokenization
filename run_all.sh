@@ -1,6 +1,6 @@
 #!/bin/bash
 # One-click: ReAct vs ReAct+tokenization comparison (HotpotQA + FEVER).
-# Requires: OPENAI_API_KEY, pip install openai requests beautifulsoup4
+# Requires: OPENAI_API_KEY, pip install -r requirements-tokenization.txt
 set -e
 cd "$(dirname "$0")"
 export PYTHONPATH="."
