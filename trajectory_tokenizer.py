@@ -7,8 +7,9 @@ from typing import List, Tuple, Optional
 
 
 def _truncate(s: str, max_len: int, suffix: str = "...") -> str:
+    """Truncate string to max_len, appending suffix. Returns s unchanged if short enough."""
     s = s.strip()
-    if len(s) <= max_len:
+    if len(s) <= max_len or max_len <= len(suffix):
         return s
     return s[: max_len - len(suffix)].rstrip() + suffix
 
