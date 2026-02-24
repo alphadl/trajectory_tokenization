@@ -19,7 +19,9 @@ def llm(prompt: str, stop: List[str], api_key: Optional[str] = None, model: str 
     try:
         from openai import OpenAI
         key = api_key or os.environ.get("OPENAI_API_KEY", "")
-        client = OpenAI(api_key=key)
+        if not (key and key.strip()):
+            raise ValueError("OPENAI_API_KEY is not set or empty")
+        client = OpenAI(api_key=key.strip())
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
@@ -78,13 +80,14 @@ def run_react(
         thought_action = llm_fn(full_prompt + f"Thought {i}:", stop=[f"\nObservation {i}:"])
         try:
             thought, action = thought_action.strip().split(f"\nAction {i}: ", 1)
-        except Exception:
+        except ValueError:
             if to_print:
                 print("parse retry:", thought_action[:150])
             n_calls += 1
             thought = thought_action.strip().split("\n")[0]
             action = llm_fn(full_prompt + f"Thought {i}: {thought}\nAction {i}:", stop=["\n"]).strip()
-        action = action[0].lower() + action[1:] if action else ""
+        # Normalize action: first letter lower (Search -> search) for env; safe for empty/single-char
+        action = (action[0].lower() + action[1:]) if len(action) > 1 else (action.lower() if action else "")
         obs, reward, done, info = env.step(action)
         obs = obs.replace("\\n", "")
         step_str = f"Thought {i}: {thought}\nAction {i}: {action}\nObservation {i}: {obs}\n"
