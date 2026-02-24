@@ -11,9 +11,10 @@ import random
 import sys
 import time
 
-_react_root = os.path.dirname(os.path.abspath(__file__))
-os.chdir(_react_root)
-sys.path.insert(0, _react_root)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _bootstrap
+_bootstrap.setup(__file__)
+
 import wikienv
 import wrappers
 from react_loop import run_react

@@ -6,7 +6,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+import _bootstrap
+_bootstrap.setup(__file__)
 
 from trajectory_tokenizer import tokenize_trajectory, parse_react_steps, count_steps_in_prompt
 
