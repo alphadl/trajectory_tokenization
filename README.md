@@ -141,6 +141,14 @@ Original ReAct data: `data/hotpot_dev_v1_simplified.json`, `data/paper_dev.jsonl
 
 ---
 
+## Related projects
+
+- **[AdaRubrics](https://github.com/alphadl/AdaRubrics)** — Adaptive dynamic rubric evaluator for agent trajectories: generates task-specific dimensions and scores runs for filtering/RLHF. Use it to score and filter trajectories; trajectory tokenization keeps those trajectories compact in context during inference.
+- **[AgentHER](https://github.com/alphadl/AgentHER)** — Hindsight Experience Replay for LLM agents: relabel failed trajectories into valid training data (SFT/DPO). Complements this repo when you have existing failed runs to recover; trajectory tokenization addresses *context length*, AgentHER addresses *data recovery*.
+- **[AgentSynth](https://github.com/alphadl/AgentSynth)** — Synthetic agent data pipeline (forward + back-translation, execution-based reject sampling). Use it to generate SFT-style trajectories; use this repo to keep long ReAct runs within context via tokenization.
+
+---
+
 ## Citation
 
 If you use this code, please cite this repository:
