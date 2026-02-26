@@ -1,5 +1,7 @@
 # ReAct + Trajectory Tokenization
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 Based on [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629) (ICLR 2023).
 
 **This release:** trajectory tokenization on ReAct. **Comparison = ReAct (baseline) vs ReAct + trajectory tokenization** on HotpotQA and FEVER (original ReAct data). Tokenization compresses older (Thought, Action, Observation) steps into short tokens so long history fits in context; the last N steps stay in full.
@@ -173,3 +175,7 @@ This work builds on ReAct:
   url = {https://arxiv.org/abs/2210.03629},
 }
 ```
+
+## License
+
+Apache 2.0
