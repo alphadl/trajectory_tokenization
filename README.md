@@ -1,5 +1,23 @@
 # ReAct + Trajectory Tokenization
 
+<p align="center">
+  <img src="assets/logo.jpg" width="220" alt="Trajectory Tokenization Logo" />
+</p>
+
+<p align="center">
+  <em>Bounded context for long-horizon ReAct — compress history, keep recent steps full.</em>
+</p>
+
+<p align="center">
+  <a href="#setup">Setup</a> •
+  <a href="#quick-start-one-click-comparison">Quick start</a> •
+  <a href="#scripts-release">Scripts</a> •
+  <a href="#related-projects">Related projects</a> •
+  <a href="#citation">Citation</a>
+</p>
+
+---
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Based on [ReAct: Synergizing Reasoning and Acting in Language Models](https://arxiv.org/abs/2210.03629) (ICLR 2023).
