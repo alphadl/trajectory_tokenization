@@ -10,7 +10,7 @@ def clean_str(p: str) -> str:
     return p.encode().decode("unicode-escape").encode("latin1").decode("utf-8")
 
 
-class textSpace(gym.spaces.Space):
+class textSpace(gym.Space):
     def contains(self, x: Any) -> bool:
         return isinstance(x, str)
 
